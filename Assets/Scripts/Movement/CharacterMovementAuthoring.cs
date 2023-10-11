@@ -9,11 +9,12 @@ public class CharacterMovementAuthoring : MonoBehaviour
     {
         public override void Bake(CharacterMovementAuthoring authoring)
         {
-            var entity = GetEntity(TransformUsageFlags.None);
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new Movement
             {
                 Speed = authoring.initialSpeed
             });
+            
         }
     }
 }

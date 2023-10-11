@@ -11,7 +11,7 @@ public partial class MovementSystem : SystemBase
         Entities
             .ForEach((ref LocalTransform transform, in Movement movement) =>
             {
-                transform = transform.Translate(math.up() * (movement.Speed * deltaTime));
+                transform = transform.Translate(new float3(movement.InputDirection, 0) * (movement.Speed * deltaTime));
             })
             .ScheduleParallel();
     }
