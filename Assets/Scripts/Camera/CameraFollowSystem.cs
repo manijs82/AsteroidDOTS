@@ -13,9 +13,15 @@ public partial struct CameraFollowSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        float deltaTime = SystemAPI.Time.DeltaTime;
+        
         var cameraTransform = CameraSingleton.Instance.transform;
         var target = SystemAPI.GetSingletonEntity<PlayerTag>();
+        var targetSpeed = state.EntityManager.GetComponentData<Movement>(target).Speed;
+        
         var targetPos = SystemAPI.GetComponent<LocalToWorld>(target).Position;
-        cameraTransform.position = new Vector3(targetPos.x, targetPos.y, cameraTransform.position.z);
+        targetPos.z = cameraTransform.transform.position.z;
+        
+        cameraTransform.position = Vector3.MoveTowards(cameraTransform.position, targetPos, targetSpeed * deltaTime);
     }
 }
