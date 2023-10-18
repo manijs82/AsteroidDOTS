@@ -12,7 +12,7 @@ public partial class EnemyMovementSystem : SystemBase
     protected override void OnUpdate()
     {
         var player = SystemAPI.GetSingletonEntity<PlayerTag>();
-        var playerPosition = EntityManager.GetComponentData<LocalToWorld>(player).Position;
+        var playerPosition = EntityManager.GetComponentData<LocalToWorld>(player).Position; // Performance heavy line TODO: Optimize
 
         Entities
             .WithAll<EnemyTag>()
