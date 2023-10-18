@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 
 public partial class MovementSystem : SystemBase
@@ -12,6 +13,7 @@ public partial class MovementSystem : SystemBase
             .ForEach((ref LocalTransform transform, in Movement movement) =>
             {
                 transform = transform.Translate(new float3(movement.InputDirection, 0) * (movement.Speed * deltaTime));
+                transform.Position.z = 0;
             })
             .ScheduleParallel();
     }
