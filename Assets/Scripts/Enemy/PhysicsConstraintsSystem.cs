@@ -16,11 +16,7 @@ public partial class PhysicsConstraintsSystem : SystemBase
     {
         Entities.ForEach((ref LocalTransform transform, ref PhysicsMass mass, in PhysicsConstraints constraints) =>
         {
-            mass.InverseInertia.x = 0;
-            mass.InverseInertia.y = 0;
-            mass.InverseInertia.z = 0;
-
-            transform = LocalTransform.FromPosition(transform.Position);
+            transform.Rotation = quaternion.identity;
         }).ScheduleParallel();
     }
 }
