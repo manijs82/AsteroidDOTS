@@ -2,17 +2,21 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
+[UpdateAfter(typeof(GetPlayerInputSystem))]
 public partial class EnemyMovementSystem : SystemBase
 {
     protected override void OnStartRunning()
     {
         RequireForUpdate<EnemyTag>();
+        RequireForUpdate<PlayerTag>();
     }
 
     protected override void OnUpdate()
     {
-        var player = SystemAPI.GetSingletonEntity<PlayerTag>();
-        var playerPosition = EntityManager.GetComponentData<LocalToWorld>(player).Position; // Performance heavy line TODO: Optimize
+        var hasPlayer = SystemAPI.TryGetSingletonEntity<PlayerTag>(out Entity player);
+        var playerPosition = EntityManager.GetComponentData<LocalToWorld>(player).Position;
+        if (!hasPlayer) 
+            return;
 
         Entities
             .WithAll<EnemyTag>()

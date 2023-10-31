@@ -12,6 +12,7 @@ public struct Spawner : IComponentData
     public float NextSpawnTime;
 }
 
+[UpdateAfter(typeof(SpawnRandomPositionSystem))]
 public partial struct SpawnSystem : ISystem
 {
     public static int ActiveSpawns;
@@ -32,7 +33,7 @@ public partial struct SpawnSystem : ISystem
     {
         if (spawner.ValueRO.NextSpawnTime < SystemAPI.Time.ElapsedTime)
         {
-            ActiveSpawns++;
+            //ActiveSpawns++;
             Entity newEntity = state.EntityManager.Instantiate(spawner.ValueRO.Prefab);  // Performance heavy line TODO: Optimize
             state.EntityManager.SetComponentData(newEntity, LocalTransform.FromPosition(spawner.ValueRO.SpawnPosition));
 
