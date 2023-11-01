@@ -34,7 +34,7 @@ public partial class SpawnRandomPositionSystem : SystemBase
                     float xPos = randomData.Value.NextFloat(spawner.SpawnBound.x, spawner.SpawnBound.XPW);
                     float yPos = randomData.Value.NextFloat(spawner.SpawnBound.y, spawner.SpawnBound.YPH);
                     
-                    if(math.distance(playerPosition, new float3(xPos, yPos, 0)) >= 10)
+                    if(math.distance(playerPosition, new float3(xPos, yPos, 0)) >= 20)
                         spawner.SpawnPosition = new float3(xPos, yPos, 0);
                     else
                         spawner.NextSpawnTime = (float)SystemAPI.Time.ElapsedTime + spawner.SpawnRate;
