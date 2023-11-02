@@ -32,7 +32,7 @@ public partial struct SpawnSystem : ISystem
     {
         if (spawner.ValueRO.NextSpawnTime < SystemAPI.Time.ElapsedTime)
         {
-            Entity newEntity = state.EntityManager.Instantiate(spawner.ValueRO.Prefab);  // Performance heavy line TODO: Optimize
+            Entity newEntity = state.EntityManager.Instantiate(spawner.ValueRO.Prefab);
             state.EntityManager.SetComponentData(newEntity, LocalTransform.FromPosition(spawner.ValueRO.SpawnPosition));
 
             spawner.ValueRW.NextSpawnTime = (float)SystemAPI.Time.ElapsedTime + spawner.ValueRO.SpawnRate;

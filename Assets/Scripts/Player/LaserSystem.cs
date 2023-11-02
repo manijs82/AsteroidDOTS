@@ -13,12 +13,17 @@ public struct Laser : IComponentData
 [UpdateAfter(typeof(MovementSystem))]
 public partial class LaserSystem : SystemBase
 {
+    
+    protected override void OnCreate()
+    {
+        RequireForUpdate<PlayerTag>();
+        RequireForUpdate<Laser>();
+    }
+    
     protected override void OnUpdate()
     {
-        var hasPlayer = SystemAPI.TryGetSingletonEntity<PlayerTag>(out Entity player);
+        var player = SystemAPI.GetSingletonEntity<PlayerTag>();
         var playerPosition = EntityManager.GetComponentData<LocalToWorld>(player).Position;
-        if (!hasPlayer) 
-            return;
         
         float3 dirToMouse = Input.mousePosition - new Vector3(Screen.width / 2f, Screen.height / 2f);
         dirToMouse = math.normalize(dirToMouse);

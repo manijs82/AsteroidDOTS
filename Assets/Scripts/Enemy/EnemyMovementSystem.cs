@@ -13,10 +13,8 @@ public partial class EnemyMovementSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        var hasPlayer = SystemAPI.TryGetSingletonEntity<PlayerTag>(out Entity player);
+        var player = SystemAPI.GetSingletonEntity<PlayerTag>();
         var playerPosition = EntityManager.GetComponentData<LocalToWorld>(player).Position;
-        if (!hasPlayer) 
-            return;
 
         Entities
             .WithAll<EnemyTag>()
