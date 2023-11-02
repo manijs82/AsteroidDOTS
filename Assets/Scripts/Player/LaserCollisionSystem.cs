@@ -3,29 +3,57 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-[UpdateAfter(typeof(LaserSystem))]
-public partial class LaserKillSystem : SystemBase
+namespace DefaultNamespace
 {
-    protected override void OnUpdate()
+    public partial struct LaserCollisionSystem : ISystem
     {
-        Entity laserEntity = SystemAPI.GetSingletonEntity<Laser>();
-        LocalTransform laserTransform = EntityManager.GetComponentData<LocalTransform>(laserEntity);
-        Laser laser = EntityManager.GetComponentData<Laser>(laserEntity);
-        float2 laserStart = laserTransform.Position.xy;
-        float2 laserEnd = (laserTransform.Position + laser.Direction * laser.Length).xy;
-
-        Entities.ForEach((ref EnemyTag enemy, in LocalTransform transform) =>
+        [BurstCompile]
+        public void OnCreate(ref SystemState state)
         {
-            float2 enemyPos = transform.Position.xy;
+            state.RequireForUpdate<Laser>();
+        }
 
-            if (LineCircleCollisionTest(laserStart, laserEnd, enemyPos, 0.5f))
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
+        {
+            Entity laserEntity = SystemAPI.GetSingletonEntity<Laser>();
+            LocalTransform laserTransform = state.EntityManager.GetComponentData<LocalTransform>(laserEntity);
+            Laser laser = state.EntityManager.GetComponentData<Laser>(laserEntity);
+            float2 laserStart = laserTransform.Position.xy;
+            float2 laserEnd = (laserTransform.Position + laser.Direction * laser.Length).xy;
+
+            new LaserCollisionCheckJob()
             {
-                enemy.IsDead = true;
-            }
-        }).ScheduleParallel();
+                LaserStart = laserStart,
+                LaserEnd = laserEnd
+            }.ScheduleParallel();
+        }
+
+        [BurstCompile]
+        public void OnDestroy(ref SystemState state)
+        {
+        }
+    }
+}
+
+[BurstCompile]
+public partial struct LaserCollisionCheckJob : IJobEntity
+{
+    public float2 LaserStart;
+    public float2 LaserEnd;
+
+    void Execute(ref EnemyTag enemy, in LocalTransform transform)
+    {
+        float2 enemyPos = transform.Position.xy;
+
+        if (LineCircleCollisionTest(LaserStart, LaserEnd, enemyPos, 0.5f))
+        {
+            enemy.IsDead = true;
+        }
     }
 
-    static bool LineCircleCollisionTest(float2 lineStart, float2 lineEnd, float2 circleCenter, float circleRadius)
+    [BurstCompile]
+    private bool LineCircleCollisionTest(float2 lineStart, float2 lineEnd, float2 circleCenter, float circleRadius)
     {
         // is either end INSIDE the circle?
         // if so, return true immediately
@@ -64,7 +92,8 @@ public partial class LaserKillSystem : SystemBase
         return false;
     }
 
-    static bool PointCircleTest(float2 point, float2 circleCenter, float circleRadius)
+    [BurstCompile]
+    private bool PointCircleTest(float2 point, float2 circleCenter, float circleRadius)
     {
         // get distance between the point and circle's center
         // using the Pythagorean Theorem
@@ -82,7 +111,8 @@ public partial class LaserKillSystem : SystemBase
         return false;
     }
 
-    static bool LinePointTest(float2 lineStart, float2 lineEnd, float2 point)
+    [BurstCompile]
+    private bool LinePointTest(float2 lineStart, float2 lineEnd, float2 point)
     {
         // get distance from the point to the two ends of the line
         float d1 = math.distance(point, lineStart);
