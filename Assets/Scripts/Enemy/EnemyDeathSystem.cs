@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-[UpdateAfter(typeof(LaserKillSystem))]
+[UpdateAfter(typeof(LaserCollisionSystem))]
 public partial class EnemyDeathSystem : SystemBase
 {
     protected override void OnUpdate()

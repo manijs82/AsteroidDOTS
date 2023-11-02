@@ -3,36 +3,34 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace DefaultNamespace
+
+public partial struct LaserCollisionSystem : ISystem
 {
-    public partial struct LaserCollisionSystem : ISystem
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
     {
-        [BurstCompile]
-        public void OnCreate(ref SystemState state)
-        {
-            state.RequireForUpdate<Laser>();
-        }
+        state.RequireForUpdate<Laser>();
+    }
 
-        [BurstCompile]
-        public void OnUpdate(ref SystemState state)
-        {
-            Entity laserEntity = SystemAPI.GetSingletonEntity<Laser>();
-            LocalTransform laserTransform = state.EntityManager.GetComponentData<LocalTransform>(laserEntity);
-            Laser laser = state.EntityManager.GetComponentData<Laser>(laserEntity);
-            float2 laserStart = laserTransform.Position.xy;
-            float2 laserEnd = (laserTransform.Position + laser.Direction * laser.Length).xy;
+    [BurstCompile]
+    public void OnUpdate(ref SystemState state)
+    {
+        Entity laserEntity = SystemAPI.GetSingletonEntity<Laser>();
+        LocalTransform laserTransform = state.EntityManager.GetComponentData<LocalTransform>(laserEntity);
+        Laser laser = state.EntityManager.GetComponentData<Laser>(laserEntity);
+        float2 laserStart = laserTransform.Position.xy;
+        float2 laserEnd = (laserTransform.Position + laser.Direction * laser.Length).xy;
 
-            new LaserCollisionCheckJob()
-            {
-                LaserStart = laserStart,
-                LaserEnd = laserEnd
-            }.ScheduleParallel();
-        }
-
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
+        new LaserCollisionCheckJob()
         {
-        }
+            LaserStart = laserStart,
+            LaserEnd = laserEnd
+        }.ScheduleParallel();
+    }
+
+    [BurstCompile]
+    public void OnDestroy(ref SystemState state)
+    {
     }
 }
 
