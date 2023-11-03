@@ -24,4 +24,4 @@
  ## How code was optimized by based on findings from using a profiler
 
 - Very early in the project I discovered using ShpereColliders are much more efficient than using BoxColliders
-- Converting LaserCollisionSystem to utilize jobs and the burst complier to calculate the collision math improved performace of the system
+- Converting LaserCollisionSystem to utilize jobs and the burst complier to calculate the collision math improved performace of the system (shown in the November 2nd commits)
