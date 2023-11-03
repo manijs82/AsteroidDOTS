@@ -24,17 +24,17 @@ public partial class LaserSystem : SystemBase
     {
         var player = SystemAPI.GetSingletonEntity<PlayerTag>();
         var playerPosition = EntityManager.GetComponentData<LocalToWorld>(player).Position;
-        
-        float3 dirToMouse = Input.mousePosition - new Vector3(Screen.width / 2f, Screen.height / 2f);
-        dirToMouse = math.normalize(dirToMouse);
+        var playerDirection = EntityManager.GetComponentData<Movement>(player).InputDirection;
+        if (math.length(playerDirection) < 0.01f)
+            return;
         
         Entities.ForEach((ref LocalTransform transform, ref Laser laser) =>
         {
-            laser.Direction = dirToMouse;
+            laser.Direction = new float3(playerDirection, 0);
             laser.Position = playerPosition;
 
             transform.Position = laser.Position;
-            float angle = math.atan2(dirToMouse.y, dirToMouse.x) - math.PI / 2f;
+            float angle = math.atan2(laser.Direction.y, laser.Direction.x) - math.PI / 2f;
             transform.Rotation = quaternion.AxisAngle(math.forward(), angle);
             transform.Scale = laser.Length;
         }).Schedule();

@@ -1,5 +1,6 @@
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.InputSystem.EnhancedTouch;
 
 [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
 public partial class GetPlayerInputSystem : SystemBase
@@ -17,16 +18,30 @@ public partial class GetPlayerInputSystem : SystemBase
     protected override void OnStartRunning()
     {
         inputActions.Enable();
+        TouchSimulation.Enable();
     }
 
     protected override void OnUpdate()
     {
-        var currentMoveInput = inputActions.Actions.Move.ReadValue<Vector2>();
-        
-        SystemAPI.SetSingleton(new PlayerInput
+        var isHoldingTouch = inputActions.Actions.Touch.ReadValue<float>();
+        if (isHoldingTouch > 0.01f)
         {
-            MoveInput = currentMoveInput
-        });
+            var mouseStart = inputActions.Actions.TouchStart.ReadValue<Vector2>();
+            var mousePos = inputActions.Actions.TouchPos.ReadValue<Vector2>();
+            var mouseDelta = (mousePos - mouseStart).normalized;
+            
+            SystemAPI.SetSingleton(new PlayerInput
+            {
+                MoveInput = mouseDelta
+            });
+        }
+        else
+        {
+            SystemAPI.SetSingleton(new PlayerInput
+            {
+                MoveInput = 0
+            });
+        }
     }
 
     protected override void OnStopRunning()
