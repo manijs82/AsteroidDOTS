@@ -1,4 +1,4 @@
-# AstroidDOTS
+# AsteroidDOTS
  Futuregames assignment for the Computer Tech course
  This project is made fully using DOTS
 
